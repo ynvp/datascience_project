@@ -1,0 +1,41 @@
+create table rta(Age_band_of_driver STRING,
+Sex_of_driver STRING,
+Educational_level STRING,
+Vehicle_driver_relation STRING,
+Driving_experience STRING,
+Lanes_or_Medians STRING,
+Types_of_Junction STRING,
+Road_surface_type STRING,
+Light_conditions STRING,
+Weather_conditions STRING,
+Type_of_collision STRING,
+Vehicle_movement STRING,
+Pedestrian_movement STRING,
+Cause_of_accident STRING,
+Accident_severity STRING) row format delimited fields terminated by ',' stored as textfile;
+
+load data local inpath '/home/cloudera/Downloads/cleaned.csv' into table rta;
+
+describe rta;
+
+// Count accidents by weather conditions
+SELECT Weather_conditions, COUNT(*) AS accident_count FROM rta GROUP BY Weather_conditions;
+
+
+// Most common type of collision
+SELECT Type_of_collision, COUNT(*) AS collision_count FROM rta GROUP BY Type_of_collision ORDER BY collision_count DESC LIMIT 1;
+
+
+// Identify the most common type of collision for each age band
+SELECT Age_band_of_driver, Type_of_collision, COUNT(*) AS collision_count
+FROM rta
+GROUP BY Age_band_of_driver, Type_of_collision
+ORDER BY Age_band_of_driver, collision_count DESC;
+
+// Age band with the highest number of accidents during daylight with normal light conditions
+SELECT Age_band_of_driver, COUNT(*) AS accident_count
+FROM rta
+WHERE Light_conditions = 'Daylight' AND Weather_conditions = 'Normal'
+GROUP BY Age_band_of_driver
+ORDER BY accident_count DESC
+LIMIT 1;
